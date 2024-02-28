@@ -38,5 +38,3 @@ Required:
 
 - `name` (String)
 - `value` (List of String)
-
-

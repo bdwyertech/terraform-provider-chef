@@ -28,5 +28,3 @@ description: |-
 - `normal_attributes_json` (String)
 - `override_attributes_json` (String)
 - `run_list` (List of String)
-
-

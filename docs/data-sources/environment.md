@@ -27,5 +27,3 @@ description: |-
 - `id` (String) The ID of this resource.
 - `json` (String)
 - `override_attributes_json` (String)
-
-

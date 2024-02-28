@@ -23,5 +23,3 @@ description: |-
 
 - `api_uri` (String)
 - `id` (String) The ID of this resource.
-
-

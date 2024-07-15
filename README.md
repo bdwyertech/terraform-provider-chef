@@ -16,17 +16,17 @@ Requirements
 Building The Provider
 ---------------------
 
-Clone repository to: `$GOPATH/src/github.com/terraform-providers/terraform-provider-chef`
+Clone repository to: `$GOPATH/src/github.com/bdwyertech/terraform-provider-chef`
 
 ```sh
-$ mkdir -p $GOPATH/src/github.com/terraform-providers; cd $GOPATH/src/github.com/terraform-providers
+$ mkdir -p $GOPATH/src/github.com/bdwyertech; cd $GOPATH/src/github.com/bdwyertech
 $ git clone git@github.com:terraform-providers/terraform-provider-chef
 ```
 
 Enter the provider directory and build the provider
 
 ```sh
-$ cd $GOPATH/src/github.com/terraform-providers/terraform-provider-chef
+$ cd $GOPATH/src/github.com/bdwyertech/terraform-provider-chef
 $ make build
 ```
 

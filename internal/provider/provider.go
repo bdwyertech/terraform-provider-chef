@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"os"
 	"strings"
@@ -59,6 +60,13 @@ func New(version string) func() *schema.Provider {
 					DefaultFunc: schema.EnvDefaultFunc("CHEF_KEY_MATERIAL", ""),
 					Description: "PEM-formatted private key for client authentication.",
 				},
+				"key_material_base64": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					DefaultFunc: schema.EnvDefaultFunc("CHEF_KEY_MATERIAL_BASE64", ""),
+					Description: "Base64-encoded PEM-formatted private key for client authentication. This is useful when storing keys in systems that don't preserve newlines (e.g., Jenkins Secret Text).",
+				},
+
 				"allow_unverified_ssl": {
 					Type:        schema.TypeBool,
 					Optional:    true,
@@ -96,6 +104,21 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 
 	if v, ok := d.GetOk("key_material"); ok {
 		config.Key = v.(string)
+	}
+
+	if v, ok := d.GetOk("key_material_base64"); ok {
+		decoded, err := base64.StdEncoding.DecodeString(v.(string))
+		if err != nil {
+			return nil, diag.Diagnostics{
+				{
+					Severity:      diag.Error,
+					Summary:       "Error decoding base64-encoded private key",
+					Detail:        fmt.Sprintf("Failed to decode key_material_base64: %s", err),
+					AttributePath: cty.GetAttrPath("key_material_base64"),
+				},
+			}
+		}
+		config.Key = string(decoded)
 	}
 
 	client, err := chefc.NewClient(config)

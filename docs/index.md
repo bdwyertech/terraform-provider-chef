@@ -24,4 +24,5 @@ description: |-
 
 - `allow_unverified_ssl` (Boolean) If set, the Chef client will permit unverifiable SSL certificates.
 - `key_material` (String) PEM-formatted private key for client authentication.
+- `key_material_base64` (String) Base64-encoded PEM-formatted private key for client authentication. This is useful when storing keys in systems that don't preserve newlines (e.g., Jenkins Secret Text).
 - `private_key_pem` (String, Deprecated)

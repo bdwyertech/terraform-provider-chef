@@ -1,3 +1,6 @@
+// Copyright © Brian Dwyer - Intelligent Digital Services 2026
+// SPDX-License-Identifier: MIT
+
 package main
 
 import (

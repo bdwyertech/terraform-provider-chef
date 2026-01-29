@@ -1,3 +1,5 @@
+// Copyright (c) HashiCorp, Inc.
+
 package toml
 
 // tomlType represents any Go type that corresponds to a TOML type.

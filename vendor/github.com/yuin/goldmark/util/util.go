@@ -1,3 +1,5 @@
+// Copyright (c) HashiCorp, Inc.
+
 // Package util provides utility functions for the goldmark.
 package util
 

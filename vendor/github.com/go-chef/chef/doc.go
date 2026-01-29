@@ -1,3 +1,5 @@
+// Copyright (c) HashiCorp, Inc.
+
 /*
 This is a Chef Infra Server API client. This Library can be used to write tools to
 interact with the chef server.

@@ -28,6 +28,12 @@ type FileMismatchOptions struct {
 
 	FunctionEntries []os.DirEntry
 
+	EphemeralResourceEntries []os.DirEntry
+
+	ActionEntries []os.DirEntry
+
+	ListResourceEntries []os.DirEntry
+
 	Schema *tfjson.ProviderSchema
 }
 
@@ -74,10 +80,25 @@ func (check *FileMismatchCheck) Run() error {
 		result = errors.Join(result, err)
 	}
 
+	if check.Options.EphemeralResourceEntries != nil {
+		err := check.ResourceFileMismatchCheck(check.Options.EphemeralResourceEntries, "ephemeral resource", check.Options.Schema.EphemeralResourceSchemas)
+		result = errors.Join(result, err)
+	}
+
+	if check.Options.ActionEntries != nil {
+		err := check.ActionFileMismatchCheck(check.Options.ActionEntries, "action", check.Options.Schema.ActionSchemas)
+		result = errors.Join(result, err)
+	}
+
+	if check.Options.ListResourceEntries != nil {
+		err := check.ResourceFileMismatchCheck(check.Options.ListResourceEntries, "list resource", check.Options.Schema.ListResourceSchemas)
+		result = errors.Join(result, err)
+	}
+
 	return result
 }
 
-// ResourceFileMismatchCheck checks for mismatched files, either missing or extraneous, against the resource/datasouce schema
+// ResourceFileMismatchCheck checks for mismatched files, either missing or extraneous, against the resource/datasource schema
 func (check *FileMismatchCheck) ResourceFileMismatchCheck(files []os.DirEntry, resourceType string, schemas map[string]*tfjson.Schema) error {
 	if len(files) == 0 {
 		log.Printf("[DEBUG] Skipping %s file mismatch checks due to missing file list", resourceType)
@@ -191,9 +212,72 @@ func (check *FileMismatchCheck) FunctionFileMismatchCheck(files []os.DirEntry, f
 
 }
 
+// ActionFileMismatchCheck checks for mismatched files, either missing or extraneous, against the action schema
+func (check *FileMismatchCheck) ActionFileMismatchCheck(files []os.DirEntry, actionType string, schemas map[string]*tfjson.ActionSchema) error {
+	if len(files) == 0 {
+		log.Printf("[DEBUG] Skipping %s file mismatch checks due to missing file list", actionType)
+		return nil
+	}
+
+	if len(schemas) == 0 {
+		log.Printf("[DEBUG] Skipping %s file mismatch checks due to missing schemas", actionType)
+		return nil
+	}
+
+	var extraFiles []string
+	var missingFiles []string
+
+	for _, file := range files {
+		log.Printf("[DEBUG] Found file %s", file.Name())
+		if fileHasAction(schemas, check.Options.ProviderShortName, file.Name()) {
+			continue
+		}
+
+		if check.IgnoreFileMismatch(file.Name()) {
+			continue
+		}
+
+		log.Printf("[DEBUG] Found extraneous file %s", file.Name())
+		extraFiles = append(extraFiles, file.Name())
+	}
+
+	for _, actionName := range actionNames(schemas) {
+		log.Printf("[DEBUG] Found %s %s", actionType, actionName)
+		if resourceHasFile(files, check.Options.ProviderShortName, actionName) {
+			continue
+		}
+
+		if check.IgnoreFileMissing(actionName) {
+			continue
+		}
+
+		log.Printf("[DEBUG] Missing file for %s %s", actionType, actionName)
+		missingFiles = append(missingFiles, actionName)
+	}
+
+	var result error
+
+	for _, extraFile := range extraFiles {
+		err := fmt.Errorf("matching %s for documentation file (%s) not found, file is extraneous or incorrectly named", actionType, extraFile)
+		result = errors.Join(result, err)
+	}
+
+	for _, missingFile := range missingFiles {
+		err := fmt.Errorf("missing documentation file for %s: %s", actionType, missingFile)
+		result = errors.Join(result, err)
+	}
+
+	return result
+
+}
+
 func (check *FileMismatchCheck) IgnoreFileMismatch(file string) bool {
 	for _, ignoreResourceName := range check.Options.IgnoreFileMismatch {
-		if ignoreResourceName == fileResourceName(check.Options.ProviderShortName, file) {
+		if ignoreResourceName == fileResourceNameWithProvider(check.Options.ProviderShortName, file) {
+			return true
+		} else if ignoreResourceName == TrimFileExtension(file) {
+			// While uncommon, it is valid for a resource type to be named the same as the provider itself.
+			// https://github.com/hashicorp/terraform-plugin-docs/issues/419
 			return true
 		}
 	}
@@ -212,7 +296,13 @@ func (check *FileMismatchCheck) IgnoreFileMissing(resourceName string) bool {
 }
 
 func fileHasResource(schemaResources map[string]*tfjson.Schema, providerName, file string) bool {
-	if _, ok := schemaResources[fileResourceName(providerName, file)]; ok {
+	if _, ok := schemaResources[fileResourceNameWithProvider(providerName, file)]; ok {
+		return true
+	}
+
+	// While uncommon, it is valid for a resource type to be named the same as the provider itself.
+	// https://github.com/hashicorp/terraform-plugin-docs/issues/419
+	if _, ok := schemaResources[TrimFileExtension(file)]; ok {
 		return true
 	}
 
@@ -227,7 +317,20 @@ func fileHasFunction(functions map[string]*tfjson.FunctionSignature, file string
 	return false
 }
 
-func fileResourceName(providerName, fileName string) string {
+func fileHasAction(schemaActions map[string]*tfjson.ActionSchema, providerName, file string) bool {
+	if _, ok := schemaActions[fileResourceNameWithProvider(providerName, file)]; ok {
+		return true
+	}
+
+	// While uncommon, it is valid for an action to be named the same as the provider itself.
+	if _, ok := schemaActions[TrimFileExtension(file)]; ok {
+		return true
+	}
+
+	return false
+}
+
+func fileResourceNameWithProvider(providerName, fileName string) string {
 	resourceSuffix := TrimFileExtension(fileName)
 
 	return fmt.Sprintf("%s_%s", providerName, resourceSuffix)
@@ -237,7 +340,12 @@ func resourceHasFile(files []os.DirEntry, providerName, resourceName string) boo
 	var found bool
 
 	for _, file := range files {
-		if fileResourceName(providerName, file.Name()) == resourceName {
+		if fileResourceNameWithProvider(providerName, file.Name()) == resourceName {
+			found = true
+			break
+		} else if TrimFileExtension(file.Name()) == resourceName {
+			// While uncommon, it is valid for a resource type to be named the same as the provider itself.
+			// https://github.com/hashicorp/terraform-plugin-docs/issues/419
 			found = true
 			break
 		}
@@ -257,6 +365,18 @@ func functionHasFile(files []os.DirEntry, functionName string) bool {
 	}
 
 	return found
+}
+
+func actionNames(actions map[string]*tfjson.ActionSchema) []string {
+	names := make([]string, 0, len(actions))
+
+	for name := range actions {
+		names = append(names, name)
+	}
+
+	sort.Strings(names)
+
+	return names
 }
 
 func resourceNames(resources map[string]*tfjson.Schema) []string {

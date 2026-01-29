@@ -1,3 +1,5 @@
+// Copyright (c) HashiCorp, Inc.
+
 //
 //  Author:: Salim Afiune <afiune@chef.io>
 //

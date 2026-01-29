@@ -1,3 +1,5 @@
+// Copyright (c) HashiCorp, Inc.
+
 package semver
 
 // Collection is a collection of Version instances and implements the sort

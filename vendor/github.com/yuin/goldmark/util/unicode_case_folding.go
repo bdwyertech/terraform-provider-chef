@@ -1,3 +1,5 @@
+// Copyright (c) HashiCorp, Inc.
+
 package util
 
 //go:generate go run ../_tools unicode-case-folding-map -o ../_tools/unicode-case-folding-map.json

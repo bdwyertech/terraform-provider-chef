@@ -1,3 +1,5 @@
+// Copyright (c) HashiCorp, Inc.
+
 package frontmatter
 
 import "github.com/yuin/goldmark/parser"

@@ -1,3 +1,5 @@
+// Copyright (c) HashiCorp, Inc.
+
 package chef
 
 // TODO: Add a call to retrive all ACLs.

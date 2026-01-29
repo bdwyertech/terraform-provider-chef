@@ -1,3 +1,5 @@
+// Copyright (c) HashiCorp, Inc.
+
 // Package html implements renderer that outputs HTMLs.
 package html
 

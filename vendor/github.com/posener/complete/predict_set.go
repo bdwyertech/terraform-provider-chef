@@ -1,3 +1,5 @@
+// Copyright (c) HashiCorp, Inc.
+
 package complete
 
 // PredictSet expects specific set of terms, given in the options argument.

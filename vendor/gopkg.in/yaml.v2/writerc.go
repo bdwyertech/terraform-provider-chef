@@ -1,3 +1,5 @@
+// Copyright (c) HashiCorp, Inc.
+
 package yaml
 
 // Set the writer error and return false.

@@ -1,3 +1,5 @@
+// Copyright (c) HashiCorp, Inc.
+
 package iterators
 
 import "github.com/clipperhouse/stringish"

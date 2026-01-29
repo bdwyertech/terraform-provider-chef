@@ -1,3 +1,5 @@
+// Copyright (c) HashiCorp, Inc.
+
 //go:build js && !appengine
 // +build js,!appengine
 

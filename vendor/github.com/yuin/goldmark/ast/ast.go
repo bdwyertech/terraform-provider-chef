@@ -1,3 +1,5 @@
+// Copyright (c) HashiCorp, Inc.
+
 // Package ast defines AST nodes that represent markdown elements.
 package ast
 

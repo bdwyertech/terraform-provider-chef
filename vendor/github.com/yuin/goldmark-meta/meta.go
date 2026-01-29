@@ -1,3 +1,5 @@
+// Copyright (c) HashiCorp, Inc.
+
 // package meta is a extension for the goldmark(http://github.com/yuin/goldmark).
 //
 // This extension parses YAML metadata blocks and store metadata to a

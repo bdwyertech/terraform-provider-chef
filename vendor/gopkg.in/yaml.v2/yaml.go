@@ -1,3 +1,5 @@
+// Copyright (c) HashiCorp, Inc.
+
 // Package yaml implements YAML support for the Go language.
 //
 // Source code and other details for the project are available at GitHub:

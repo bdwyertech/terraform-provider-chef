@@ -1,3 +1,5 @@
+// Copyright (c) HashiCorp, Inc.
+
 // Package graphemes implements Unicode grapheme cluster boundaries: https://unicode.org/reports/tr29/#Grapheme_Cluster_Boundaries
 package graphemes
 

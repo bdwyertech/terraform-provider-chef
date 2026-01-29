@@ -1,3 +1,5 @@
+// Copyright (c) HashiCorp, Inc.
+
 package complete
 
 // Command represents a command line

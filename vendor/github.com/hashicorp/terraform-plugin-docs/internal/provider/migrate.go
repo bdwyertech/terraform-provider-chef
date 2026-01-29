@@ -105,7 +105,7 @@ func (m *migrator) Migrate() error {
 		if d.IsDir() {
 			switch d.Name() {
 			case "d", "data-sources": //data-sources
-				m.infof("migrating data-sources directory: %s", d.Name())
+				m.infof("migrating datasources directory: %s", d.Name())
 				err := filepath.WalkDir(path, m.MigrateTemplate("data-sources"))
 				if err != nil {
 					return err
@@ -119,8 +119,15 @@ func (m *migrator) Migrate() error {
 				}
 				return filepath.SkipDir
 			case "functions":
-				m.infof("migrating functons directory: %s", d.Name())
+				m.infof("migrating functions directory: %s", d.Name())
 				err := filepath.WalkDir(path, m.MigrateTemplate("functions"))
+				if err != nil {
+					return err
+				}
+				return filepath.SkipDir
+			case "ephemeral-resources":
+				m.infof("migrating ephemeral resources directory: %s", d.Name())
+				err := filepath.WalkDir(path, m.MigrateTemplate("ephemeral-resources"))
 				if err != nil {
 					return err
 				}
@@ -130,6 +137,20 @@ func (m *migrator) Migrate() error {
 				err := cp(path, filepath.Join(m.ProviderTemplatesDir(), "guides"))
 				if err != nil {
 					return fmt.Errorf("unable to copy guides directory %q: %w", path, err)
+				}
+				return filepath.SkipDir
+			case "actions":
+				m.infof("migrating actions directory: %s", d.Name())
+				err := filepath.WalkDir(path, m.MigrateTemplate("actions"))
+				if err != nil {
+					return err
+				}
+				return filepath.SkipDir
+			case "list-resources":
+				m.infof("migrating list resources directory: %s", d.Name())
+				err := filepath.WalkDir(path, m.MigrateTemplate("list-resources"))
+				if err != nil {
+					return err
 				}
 				return filepath.SkipDir
 			}
@@ -292,8 +313,13 @@ func (m *migrator) ExtractCodeExamples(content []byte, newRelDir string, templat
 			lang := string(fencedNode.Info.Text(content)[:])
 			switch lang {
 			case "hcl", "terraform":
+
 				exampleCount++
 				ext = ".tf"
+				if strings.Contains(newRelDir, "list-resources") {
+					//m.infof("### DEBUG ### this is a list resource: %s", newRelDir)
+					ext = ".tfquery.hcl"
+				}
 				exampleName = "example_" + strconv.Itoa(exampleCount) + ext
 				examplePath = filepath.Join(m.examplesDir, newRelDir, exampleName)
 				template = fmt.Sprintf("{{tffile \"%s\"}}", examplePath)

@@ -1,3 +1,5 @@
+// Copyright (c) HashiCorp, Inc.
+
 package complete
 
 // Predictor implements a predict method, in which given

@@ -1,3 +1,5 @@
+// Copyright (c) HashiCorp, Inc.
+
 // based on https://code.google.com/p/gopass
 // Author: johnsiilver@gmail.com (John Doak)
 //

@@ -1,3 +1,5 @@
+// Copyright (c) HashiCorp, Inc.
+
 // Package frontmatter adds support for parsing front matter
 // in Markdown documents.
 //

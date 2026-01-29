@@ -1,3 +1,5 @@
+// Copyright (c) HashiCorp, Inc.
+
 /*
 Package complete provides a tool for bash writing bash completion in go, and bash completion for the go command line.
 

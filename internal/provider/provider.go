@@ -33,6 +33,7 @@ func New(version string) func() *schema.Provider {
 				"chef_node":          resourceChefNode(),
 				"chef_role":          resourceChefRole(),
 				"chef_user_key":      resourceChefUserKey(),
+				"chef_user":          resourceChefUser(),
 			},
 			Schema: map[string]*schema.Schema{
 				"server_url": {

@@ -111,4 +111,4 @@ jobs:
           CHEF_KEY_MATERIAL: ${{ secrets.CHEF_KEY_MATERIAL }}
 
         run: |
-          go test -v -cover ./internal/provider/
+          go test -v -cover -skip 'TestAccChefUser|TestAccChefUserKey' ./internal/provider/

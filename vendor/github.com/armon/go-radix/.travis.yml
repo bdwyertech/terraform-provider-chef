@@ -1,5 +1,0 @@
-# Copyright (c) HashiCorp, Inc.
-
-language: go
-go:
-  - tip

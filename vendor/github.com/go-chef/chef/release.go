@@ -1,5 +1,3 @@
-// Copyright (c) HashiCorp, Inc.
-
 //go:build !debug
 // +build !debug
 

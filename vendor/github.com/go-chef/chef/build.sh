@@ -1,6 +1,4 @@
 #!/bin/sh
-# Copyright (c) HashiCorp, Inc.
-
 
 # fixes build/test problems 
 if [ ! -d $GOPATH/src/github.com/go-chef/chef ];  then
